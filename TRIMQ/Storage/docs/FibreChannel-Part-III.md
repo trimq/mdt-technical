@@ -9,7 +9,10 @@ Bài viết này là phần cuối cùng của series bài về Fibre Channel. X
 ## Mục lục
 
 - [1. Fibre Channel Redundancy](#1)
-
+- [2. LUN Masking](#2)
+- [3. Target Portal Groups](#3)
+- [4. Asymmetric Logical Unit Assignment](#4)
+- [5. Multipathing](#5)
 
 
 
@@ -64,4 +67,33 @@ Sau đó, tôi tạo các Server thành 1 Zone đặt tên là Zoneset-B, bao g�
 
 <img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-08-768x399.jpg">
 
+<a name="2"></a>
+### 2. LUN Masking 
 
+Cũng giống như cấu hình Zone trên Switch, cấu hình LUN Masking thực hiện trên hệ thống Storage 
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-09-768x400.jpg">
+
+Trên hệ thống storage, tôi có 2 LUN boot cho Server 1 và Server 2.
+
+Tôi cấu hình LUN Masking để Server 1 có thể sử dụng cả 2 port HBA có thể kết nối đến LUN của nó. S1-A là một alias cho WWPN kết nối tới fabric A, S1-B là một alias cho WWPN kết nối tới fabric B. Cả 2 alias này được thêm vào LUN Masking group cho phép Server 1 kết nối vào LUN. Server 1 được phép kết nối vào fabric A và fabric B.
+
+Làm tương tự với Server 2, với các alias là Server 2-A và Server 2-B
+
+<a name="3"></a>
+### 3. Target Portal Groups
+
+Chủ đề tiếp theo là TPG (Target Portal Groups). Tất cả các port trên hệ thống lưu trữ, các initiator kết nối vào hệ thống lưu trữ thông qua các member của Target Portal Groups. TPGs có thể sử dụng để kiểm soát các port mà initiator có thể kết nối vào hệ thống lưu trữ. Nếu cần, bạn có thể cấu hình các TPG riêng ra để dành cho các máy chủ quan trọng. Trên hầu hết các hệ thống lưu trữ, tất cả các port được thêm mặc định vào một TPGs để initiator có thể truy cập vào hệ thống lưu trữ.
+
+Trong ví dụ dưới đây, port Controller 1-A, Controller 1-B, Controller 2-A, and Controller 2-B được thêm vào một Target Portal Groups. Mỗi port đó sẽ có WWPN riêng trong TPG và các máy chủ hiểu rằng có thể kết nối vào hệ thống lưu trữ thông qua bất kì port nào.
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-10-768x255.jpg">
+
+<a name="4"></a>
+### 4. Asymmetric Logical Unit Assignment
+
+
+<a name="5"></a>
+### 5. Multipathing
+
+Phần mềm Multipathing, initiator sẽ chọn một đường dẫn hay nhiều đường dẫn để đưa vào hệ thống storage. Hầu hết các hệ điều hành phổ biến (tất cả các flavor của Windows, Unix, Linux, VMware...) có phần mềm multipath hỗ trợ các đường dẫn active/active hoặc active/standby. Các client sẽ tự động sử dụng một đường dẫn kết nối khác nếu một đường ngừng hoạt động. 
