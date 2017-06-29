@@ -13,8 +13,7 @@ Bài viết này là phần cuối cùng của series bài về Fibre Channel. X
 - [3. Target Portal Groups](#3)
 - [4. Asymmetric Logical Unit Assignment](#4)
 - [5. Multipathing](#5)
-
-
+- [6. Tài liệu gốc](#6)
 
 -----------------------------------------------
 
@@ -92,8 +91,48 @@ Trong ví dụ dưới đây, port Controller 1-A, Controller 1-B, Controller 2-
 <a name="4"></a>
 ### 4. Asymmetric Logical Unit Assignment
 
+ALUA được sử dụng bởi hệ thống storage để nói với client rằng đâu là đường dẫn ưa thích mà nó sử dụng. Các đường dẫn trực tiếp đến hệ thống lưu trữ sở hữu LUN sẽ được đánh dấu là đường dẫn tối ưu hóa. Các đường dẫn khác sẽ không được đánh giấu là tối ưu hóa. 
+
+Hãy xem cách thức làm việc. Ví dụ, hệ thống lưu trữ có 2 node là Controller 1 và Controller 2, Controller 1 sở hữu LUN 1 dành cho Server 1. 
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-11-768x482.jpg">
+
+Server 1 có thể truy cập vào LUN thông qua Controller 1 và Controller 2. Nhưng sẽ tốt hơn nếu nó đi trực tiếp qua Controller 1, đó là đường dẫn trực tiếp. Hệ thống lưu trữ sẽ có Server biết tất cả thông tin về các đường dẫn nó có thể kết nối đến. Đâu là đường dẫn ưa thích thì ALUA sẽ xác định.
+
+Server 1 sẽ tối ưu hóa đường dẫn 1 đi qua fabric A và kết thúc trên HBA Controller 1-A.
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-12-768x469.jpg">
+
+Nó cũng sẽ học cách tối ưu hóa đường dẫn 2 qua fabric B kết thúc trên công HBA Controller 1-B.
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-13-768x468.jpg">
+
+Đường dẫn 1 và 2 được tối ưu hóa vì nó đều dẫn đến LUN
+
+Server cũng sẽ học về đường dẫn 3 không được tối ưu hóa đi qua fabric A và kết thúc trên cổng HBA Controller 2-A.
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-14-768x491.jpg">
+
+Tương tự vói đường dẫn không được tối ưu hóa số 4
+
+<img src="http://www.flackbox.com/wp-content/uploads/2016/07/FC-15-768x479.jpg">
+
+Server có 4 đường dẫn tới hệ thống storage, nhưng chỉ có 2 được tối ưu hóa.
+
+Trong quá trình login, Server sẽ biết được các đường dẫn nào đang hoạt động và ALUA sẽ thông báo các đường dẫn ưa thích.
+
 
 <a name="5"></a>
 ### 5. Multipathing
 
 Phần mềm Multipathing, initiator sẽ chọn một đường dẫn hay nhiều đường dẫn để đưa vào hệ thống storage. Hầu hết các hệ điều hành phổ biến (tất cả các flavor của Windows, Unix, Linux, VMware...) có phần mềm multipath hỗ trợ các đường dẫn active/active hoặc active/standby. Các client sẽ tự động sử dụng một đường dẫn kết nối khác nếu một đường ngừng hoạt động. 
+
+Với ví dụ như trên, sẽ có 2 đường được tối ưu hóa và 2 đường không được tối ưu hóa, sử dụng phần mềm multipath trên client sẽ giúp chọn ra active/active trên 2 đường được tối ưu hóa. Hoặc chọn active/standby để khi một đường down, vẫn còn một đường dự phòng.
+
+Các nhà sản xuất HBA phổ biến là Emulex và Qlogic, và cả hai đều có phần mềm multipathing riêng của họ được cài đặt và cấu hình trên máy client.
+
+<a name="6"></a>
+### 6. Tài liệu gốc
+
+http://www.flackbox.com/fibre-channel-san-part-3-redundancy-multipathing/
+
